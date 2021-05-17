@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:     Elementor - Smeedijzer
+ * Plugin Name:     Elementor - Background image size selection
  * Plugin URI:      #
  * Description:     Background image size selection. (https://github.com/elementor/elementor/issues/6778)
  * Version:         1.0
