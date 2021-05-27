@@ -51,9 +51,9 @@ add_action('elementor/dynamic_tags/register_tags', function ($dynamic_tags) {
             } else {
                 $image_data = $this->get_settings('fallback');
 				
-				if ($image_data && isset($image_data['id'])) {
-					$image_data['url'] = wp_get_attachment_image_src($image_data['id'], $size)[0];
-				}
+		if ($image_data && isset($image_data['id'])) {
+			$image_data['url'] = wp_get_attachment_image_src($image_data['id'], $size)[0];
+		}
             }
 
             return $image_data;
