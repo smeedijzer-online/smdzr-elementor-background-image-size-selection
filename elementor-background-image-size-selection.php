@@ -3,7 +3,7 @@
  * Plugin Name:     Elementor - Background image size selection
  * Plugin URI:      #
  * Description:     Background image size selection. (https://github.com/elementor/elementor/issues/6778)
- * Version:         1.0
+ * Version:         1.0.1
  * Author:          Smeedijzer
  * Author URI:      #
  **/
@@ -41,15 +41,19 @@ add_action('elementor/dynamic_tags/register_tags', function ($dynamic_tags) {
         public function get_value(array $options = [])
         {
             $thumbnail_id = get_post_thumbnail_id();
+			$size = $this->get_settings('size');
 
             if ($thumbnail_id) {
-                $size = $this->get_settings('size');
                 $image_data = [
                         'id' => $thumbnail_id,
                         'url' => wp_get_attachment_image_src($thumbnail_id, $size)[0],
                 ];
             } else {
                 $image_data = $this->get_settings('fallback');
+				
+				if ($image_data && isset($image_data['id'])) {
+					$image_data['url'] = wp_get_attachment_image_src($image_data['id'], $size)[0];
+				}
             }
 
             return $image_data;
