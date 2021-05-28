@@ -16,11 +16,11 @@
  * Elementor featured image with custom size
  */
 add_action('elementor/dynamic_tags/register_tags', function ($dynamic_tags) {
-    class Featured_Image_Custom_Size extends \ElementorPro\Modules\DynamicTags\Tags\Base\Data_Tag
+    class Image_Custom_Size extends \ElementorPro\Modules\DynamicTags\Tags\Base\Data_Tag
     {
         public function get_name()
         {
-            return 'post-featured-image-custom-size';
+            return 'post-image-custom-size';
         }
 
         public function get_group()
@@ -35,25 +35,22 @@ add_action('elementor/dynamic_tags/register_tags', function ($dynamic_tags) {
 
         public function get_title()
         {
-            return 'Featured image (Custom Size)';
+            return 'Image (Custom Size)';
         }
 
         public function get_value(array $options = [])
         {
-            $thumbnail_id = get_post_thumbnail_id();
-			$size = $this->get_settings('size');
+            $thumbnail_id = $this->get_settings('bg_image')['id'];
+
+            $settings = $this->get_settings_for_display();
 
             if ($thumbnail_id) {
+                $size = $this->get_settings('size');
                 $image_data = [
-                        'id' => $thumbnail_id,
-                        'url' => wp_get_attachment_image_src($thumbnail_id, $size)[0],
+                    'id' => $thumbnail_id,
+                    // 'url' => wp_get_attachment_image_src($thumbnail_id, $size)[0],
+                    'url' =>  \Elementor\Group_Control_Image_Size::get_attachment_image_src(  $thumbnail_id, 'bg_size', $settings ),
                 ];
-            } else {
-                $image_data = $this->get_settings('fallback');
-				
-		if ($image_data && isset($image_data['id'])) {
-			$image_data['url'] = wp_get_attachment_image_src($image_data['id'], $size)[0];
-		}
             }
 
             return $image_data;
@@ -62,22 +59,30 @@ add_action('elementor/dynamic_tags/register_tags', function ($dynamic_tags) {
         protected function _register_controls()
         {
             $this->add_control(
-                    'size',
-                    [
-                            'label' => __('Size', 'elementor-pro'),
-                            'type' => \Elementor\Controls_Manager::TEXT,
-                    ]
+                'size',
+                [
+                    'label' => __('Size', 'elementor-pro'),
+                    'type' => \Elementor\Controls_Manager::IMAGE_DIMENSIONS,
+                ]
+            );
+
+            $this->add_group_control(
+                \Elementor\Group_Control_Image_Size::get_type(),
+                [
+                    'name' => 'bg', // Usage: `{name}_size` and `{name}_custom_dimension`, in this case `thumbnail_size` and `thumbnail_custom_dimension`.
+                    'default' => 'full',
+                ]
             );
 
             $this->add_control(
-                    'fallback',
-                    [
-                            'label' => __('Fallback', 'elementor-pro'),
-                            'type' => \Elementor\Controls_Manager::MEDIA,
-                    ]
+                'bg_image',
+                [
+                    'label' => __('Image', 'elementor-pro'),
+                    'type' => \Elementor\Controls_Manager::MEDIA,
+                ]
             );
         }
     }
 
-    $dynamic_tags->register_tag('Featured_Image_Custom_Size');
+    $dynamic_tags->register_tag('Image_Custom_Size');
 });
