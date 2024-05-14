@@ -44,7 +44,7 @@ add_action('elementor/dynamic_tags/register_tags', function ($dynamic_tags) {
 
             if ($thumbnail_id) {
                 $image_data = [
-                        'url' => \Elementor\Group_Control_Image_Size::get_attachment_image_src( $thumbnail_id, 'image', $settings ),
+                    'url' => \Elementor\Group_Control_Image_Size::get_attachment_image_src( $thumbnail_id, 'image', $settings ),
                 ];
             } else {
                 $image_data = $this->get_settings('fallback');
