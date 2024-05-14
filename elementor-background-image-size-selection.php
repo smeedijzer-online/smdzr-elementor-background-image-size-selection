@@ -1,11 +1,10 @@
 <?php
 /**
- * Plugin Name:     Elementor - Background image size selection
- * Plugin URI:      #
- * Description:     Background image size selection. (https://github.com/elementor/elementor/issues/6778)
- * Version:         1.0.1
- * Author:          Smeedijzer
- * Author URI:      #
+ * Plugin Name:     Elementor - Background image size selection for Featured images
+ * Description:     Background image size selection for featured images. (https://github.com/elementor/elementor/issues/6778)
+ * Version:         1.0.3
+ * Author:          Smeedijzer Internet
+ * Author URI:      https://www.smeedijzer.net
  **/
  
  if ( ! defined( 'ABSPATH' ) ) {
@@ -41,19 +40,20 @@ add_action('elementor/dynamic_tags/register_tags', function ($dynamic_tags) {
         public function get_value(array $options = [])
         {
             $thumbnail_id = get_post_thumbnail_id();
-			$size = $this->get_settings('size');
+            $settings = $this->get_settings_for_display();
 
             if ($thumbnail_id) {
                 $image_data = [
-                        'id' => $thumbnail_id,
-                        'url' => wp_get_attachment_image_src($thumbnail_id, $size)[0],
+                        'url' => \Elementor\Group_Control_Image_Size::get_attachment_image_src( $thumbnail_id, 'image', $settings ),
                 ];
             } else {
                 $image_data = $this->get_settings('fallback');
 				
-		if ($image_data && isset($image_data['id'])) {
-			$image_data['url'] = wp_get_attachment_image_src($image_data['id'], $size)[0];
-		}
+		        if ($image_data && isset($image_data['id'])) {
+                    $attachment_id = $image_data['id'];
+                    unset($image_data['id']);
+			        $image_data['url'] = \Elementor\Group_Control_Image_Size::get_attachment_image_src( $attachment_id, 'image', $settings );
+		        }
             }
 
             return $image_data;
@@ -61,20 +61,20 @@ add_action('elementor/dynamic_tags/register_tags', function ($dynamic_tags) {
 
         protected function _register_controls()
         {
-            $this->add_control(
-                    'size',
-                    [
-                            'label' => __('Size', 'elementor-pro'),
-                            'type' => \Elementor\Controls_Manager::TEXT,
-                    ]
+            $this->add_group_control(
+                \Elementor\Group_Control_Image_Size::get_type(),
+                [
+                    'name' => 'image', // Usage: `{name}_size` and `{name}_custom_dimension`, in this case `image_size` and `image_custom_dimension`.
+                    'default' => 'large',
+                ]
             );
 
             $this->add_control(
-                    'fallback',
-                    [
-                            'label' => __('Fallback', 'elementor-pro'),
-                            'type' => \Elementor\Controls_Manager::MEDIA,
-                    ]
+                'fallback',
+                [
+                    'label' => __('Fallback', 'elementor-pro'),
+                    'type' => \Elementor\Controls_Manager::MEDIA,
+                ]
             );
         }
     }
